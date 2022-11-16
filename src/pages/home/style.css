@@ -54,8 +54,11 @@ p {
     width: 1140px;
     position: relative;
     display: block;
-
     clear: both
+}
+
+.mt-40{
+    margin-top: 40px;
 }
 
 .clear {
@@ -2540,7 +2543,7 @@ a.more {
 }
 
 .data-top {
-    margin-top: 10px
+    margin-top: 40px
 }
 
 .top-title {

@@ -27,12 +27,13 @@
     }
     .cart{
         flex-grow: 2;
+        margin-top:5px;
     }
 }
 
 .header_nav{
     display: flex !important;
-    justify-content: center;
+    justify-content: space-between;
     margin-bottom: 0 !important;
     li{
         height: 40px;
