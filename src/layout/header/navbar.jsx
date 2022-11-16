@@ -1,34 +1,41 @@
 import '../../pages/home/style.css'
 import '../../pages/home/slidebars.css'
 import '../../pages/home/crumbs.css'
+import logo from '../../assets/logohoa.png'
+import './navbar.scss'
+import cart from '../../assets/shopping_cart.svg'
+import user from '../../assets/user.svg'
+import { Link } from "react-router-dom";
 
 export function Navbar() {
+
     return (
-        <> 
+        <>
             <div id="header" className>
-                <div className="wrapper clearfix">
+                <div className="wrapper header">
                     <div className="logo">
-                        <a href="https://hoayeuthuong.com/" title="Shop hoa yêu thương"><img src="./Shop hoa tươi Hoayeuthuong_ Đặt hoa online, giao hoa miễn phí_files/logo-hoa-yeu-thuong.png" /></a>
+                        <a href="" title="Shop hoa "><img src={logo} /></a>
                     </div>
                     <div className="search">
-                        <input id="txtSearch" type="text" placeholder="Tìm sản phẩm" onkeypress="txtSearchKeyUp()" />
+                        <input id="txtSearch" type="text" placeholder="Tìm sản phẩm" onClick="asd" />
                         <a href="javascript:void(0);" onclick="SearchItem();" className="btnsearch">Tìm kiếm</a>
                     </div>
                     <div className="cart">
-                        <a id="shopping-cart" href="javascript:void(0);"><img src="./Shop hoa tươi Hoayeuthuong_ Đặt hoa online, giao hoa miễn phí_files/shopping-bag.png" /><strong>Giỏ
-                            hàng</strong></a>
+                        <a id="shopping-cart" href="">
+                            <img src={cart} />
+                            <strong>Giỏ
+                                hàng</strong></a>
                     </div>
                     <div className="my-account">
-                        <img id="ctl00_ucHeader_imgUser" src="./Shop hoa tươi Hoayeuthuong_ Đặt hoa online, giao hoa miễn phí_files/user.png" style={{ borderWidth: '0px' }} />
-                        <a id="ctl00_ucHeader_hplMyAccount" title="Tài khoản" href="https://hoayeuthuong.com/account/account.aspx?lang=vn">Tài khoản</a>
+                        <img id="ctl00_ucHeader_imgUser" src={user} style={{ borderWidth: '0px' }} />
+                        <a id="ctl00_ucHeader_hplMyAccount" title="Tài khoản" href="">Tài khoản</a>
                         <div id="ctl00_ucHeader_pnlSignin" className="signin-dropdown">
-                            <a href="https://hoayeuthuong.com/account/account.aspx?lang=vn" title="Sign in" className="sign-in">Sign in</a>
+
+                            <Link to="/login" title="Sign in" className="sign-in">Đăng nhập</Link>
                             <div className="dac">
                                 <strong>Bạn chưa chưa có tài khoản?</strong>
-                                <a href="https://hoayeuthuong.com/account/account.aspx?lang=vn" title="Nhấn vào đây" className="register">Nhấn vào đây</a>
+                                <Link to="/login" title="Nhấn vào đây" className="register">Đăng ký</Link>
                             </div>
-                            <a href="https://hoayeuthuong.com/account/forgot.aspx?lang=vn">Quên mật khẩu</a>
-                            
                         </div>
                     </div>
                 </div>

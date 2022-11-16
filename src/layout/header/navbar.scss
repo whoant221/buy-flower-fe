@@ -1,0 +1,40 @@
+.header{
+    display: flex !important;
+    align-items: center !important;
+   
+    height: 90px;
+
+    .logo{
+        flex-grow: 2;
+        a{
+            img{
+                width: 150px !important;
+                height: 90px !important;
+            }
+        }
+    }
+    .search{
+        flex-grow: 5;
+        padding-left: 60px;
+        display: flex;
+        align-items: center;
+        #txtsearch{
+            height: 30px;
+        }
+        a{
+            padding: 8px 10px !important;
+        }
+    }
+    .cart{
+        flex-grow: 2;
+    }
+}
+
+.header_nav{
+    display: flex !important;
+    justify-content: center;
+    margin-bottom: 0 !important;
+    li{
+        height: 40px;
+    }
+}
