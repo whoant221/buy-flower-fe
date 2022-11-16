@@ -54,6 +54,7 @@ p {
     width: 1140px;
     position: relative;
     display: block;
+
     clear: both
 }
 
@@ -328,19 +329,16 @@ a.view_cart {
     clear: both;
     position: relative;
     float: left;
-    margin-top: 10px
+
 }
 
 #header .logo {
     float: left;
-    width: 285px;
-    padding-right: 40px
+    width: 130px;
+    padding-right: 30px;
 }
 
-#header .logo img {
-    width: 100%;
-    margin-top: 6px
-}
+
 
 #header .search {
     float: left;

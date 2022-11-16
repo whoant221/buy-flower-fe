@@ -1,0 +1,39 @@
+.login_page{
+    display: block !important;
+
+    .login_container{
+        display: flex;
+        float: left;
+        margin-top: 30px;
+        gap: 100px;
+        .register{
+            border: 1px #cdcdcd solid;
+            width: 650px;
+            
+            .title_register{
+                width: 620px;
+                text-align: left;
+                padding: 10px 0;
+                margin-left: 15px;
+                margin-top: 7px;
+                border-bottom: 1px #cdcdcd solid;
+            }
+            .form_register{
+                padding: 30px
+            }
+        }
+        .login{
+            border: 1px #cdcdcd solid;
+            width: 450px;
+            height: 35%;
+            .title_login{
+                width: 420px;
+                text-align: left;
+                padding: 10px 0;
+                margin-left: 15px;
+                margin-top: 7px;
+                border-bottom: 1px #cdcdcd solid;
+            }
+        }
+    }
+}
