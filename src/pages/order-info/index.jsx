@@ -288,10 +288,7 @@ export function OrderInfo() {
                                         </Select>
                                     </Form.Item>
                                 </div>
-
-                                <Form.Item label="Thông điệp:">
-                                    <TextArea rows={4}/>
-                                </Form.Item>
+                                
                                 <Form.Item label="Lời nhắn: ">
                                     <TextArea rows={4}/>
                                 </Form.Item>
