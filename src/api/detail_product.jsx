@@ -57,29 +57,15 @@ export const addOrder = async (body, token) => {
             Authorization: `Bearer ${token}`
         }
     };
-    try {
-        const data = await axiosBase.post(`/api/v1/orders`, body, config);
-        return data;
-    } catch (error) {
-        throw error;
-    }
+
+    return axiosBase.post(`/api/v1/orders`, body, config);
 };
 
-export const getOrder = async (params, token) => {
-    const config = {
-        headers: {
+export const getOrder = (params, token) => {
+    return axiosBase.get(`/api/v1/orders`, {
+        params, headers: {
             Authorization: `Bearer ${token}`
         }
-    };
-    try {
-        const data = await axiosBase.get(`/api/v1/orders`, {
-            params, headers: {
-                Authorization: `Bearer ${token}`
-            }
-        },);
-        return data;
-    } catch (error) {
-        throw error;
-    }
+    });
 };
 
