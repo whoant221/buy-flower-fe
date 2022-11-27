@@ -61,6 +61,10 @@ p {
     margin-top: 40px;
 }
 
+.mb-40{
+    margin-bottom: 40px;
+}
+
 .clear {
     clear: both;
     float: left

@@ -1,0 +1,1 @@
+export const formatCurrency = (e) => Math.floor(e).toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,")

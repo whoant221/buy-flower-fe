@@ -1,36 +1,105 @@
 import React from 'react'
 import { Navbar } from '../../layout/header/navbar'
+import hoahong from '../../assets/hoahong.jpg'
+import { InputNumber } from 'antd'
+import { Footer } from '../../layout/footer'
+import { addShopingCart, deleteCart, getCart } from '../../api/detail_product'
+import { useEffect } from 'react'
+import { useState } from 'react'
+import { formatCurrency } from '../../helper'
+import { useNavigate } from 'react-router-dom';
 
 export function Cart() {
+    let cartLocal = localStorage.getItem('cart')
+    let navigate = useNavigate();
+    const token = localStorage.getItem('token')
+    const [cart, setCart] = useState([])
+
+    if (!cartLocal) {
+        useEffect(() => {
+            async function fetch() {
+                setCart((await getCart(token)).data.shopping_carts)
+            }
+            fetch()
+        }, [])
+    } else {
+        useEffect(() => {
+            console.log(JSON.parse(cartLocal));
+            setCart(JSON.parse(cartLocal))
+        }, [])
+    }
+
+
+    let sum = 0
+    if (cart?.length > 0) {
+        cart.forEach(e => {
+            sum += Number(e.original_price) * e.amount
+        })
+    }
+
+    const handleSl = (sl, e) => {
+        const changeItem = { ...e, amount: sl }
+        const changeCart = cart.map(item => {
+            if (item.flower_id === e.flower_id) {
+                return item = changeItem
+            }
+            return item
+        })
+        setCart(changeCart)
+    }
+
+    const handleBook = () => {
+        async function fetch() {
+            if (cart.length > 0) {
+                await Promise.all(
+                    cart.forEach(async e => {
+                        await addShopingCart(e, token)
+                    })
+                )
+            }
+        }
+        fetch()
+        navigate('/orderinfo')
+    }
+
+    const removeItem = (e) => {
+        async function fetch() {
+            await deleteCart(e.flower_id, token)
+            setCart((await getCart(token)).data.shopping_carts)
+        }
+        fetch()
+    }
+
     return (
         <div>
-            <div>
+            <div >
                 <Navbar />
-                <div id="content">
+                <div id="content" style={{ paddingBottom: 50 }}>
                     <div className="wrapper">
                         <div className="clearfix" />
                         <div id="sc-item" className="cart-items">
-                            <div className="cart-item" data-id={13376}>
-                                <div className="img">
-                                    <img src="./shop hoa _ hoa tươi _ điện hoa _ hoayeuthuong.com_files/13376_chuyen-yeu.jpg" />
-                                </div>
-                                <div className="text">
-                                    <a href="https://hoayeuthuong.com/shop-hoa/bo-hoa-tuoi/13376_chuyen-yeu">Chuyện yêu</a>
-                                    <p><span>600.000 đ</span></p>
-                                    <div className="ctrl-qty">
-                                        <a href="javascript:void(0);" className="minus" onclick="AddOrRemoveItems(this, false, 13376, 555555,5);" />
-                                        <input className="txtQty" type="number" defaultValue={1} onchange="HandleKeypress(this, event, 13376, 555555,5)" onkeypress="HandleKeypress(this, event, 13376, 555555,5)" />
-                                        <a href="javascript:void(0);" className="plus" onclick="AddOrRemoveItems(this, true, 13376, 555555,5);" />
+                            {
+                                cart.length > 0 ? cart.map(e => {
+                                    return <div className="cart-item">
+                                        <div className="img">
+                                            <img src={e.images[0]} />
+                                        </div>
+                                        <div className="text">
+                                            <div>{e.name}</div>
+                                            <p><span>{formatCurrency(e.original_price)}</span></p>
+                                            <InputNumber defaultValue={e.amount} min={1} onChange={(sl) => handleSl(sl, e)} />
+                                        </div>
+                                        <a className="close remove-item" onClick={() => removeItem(e)}>X</a>
                                     </div>
-                                </div>
-                                <a className="close remove-item" href="javascript:void(0);" onclick="RemoveItem(13376)">X</a>
-                                <div className="clearfix" />
-                            </div>
+                                }) : <></>
+                            }
+
                         </div>
                         <div className="total">
                             <div className="each-row">
                                 <span>Tạm tính:</span>
-                                <strong id="subtotal"> 555.556 đ</strong>
+                                <strong id="subtotal"> {formatCurrency(sum) || 0}đ
+                                </strong>
                             </div>
                             <div className="each-row">
                                 <span>Phụ phí: </span>
@@ -42,20 +111,21 @@ export function Cart() {
                             </div>
                             <div className="each-row">
                                 <span>Hóa đơn VAT: </span>
-                                <strong id="vat"> 55.556 đ</strong>
+                                <strong id="vat"> 0đ</strong>
                             </div>
                             <div className="row each-row last">
                                 <span>Tổng cộng: </span>
-                                <strong id="total"> 611.111 đ</strong>
+                                <strong id="total">{formatCurrency(sum) || 0}đ</strong>
                             </div>
                             <div className="row each-row">
-                                <a href="https://hoayeuthuong.com/checkout/OrderInfo.aspx?lang=vn" className="e-buy">Đặt hàng</a>
+                                <a className="e-buy" onClick={handleBook}>Đặt hàng</a>
                             </div>
                         </div>
                     </div>
                 </div>
 
             </div>
+            <Footer />
         </div>
     )
 }

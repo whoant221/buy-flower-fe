@@ -12,10 +12,10 @@ import { DetailProduct } from './pages/detail-product';
 import { OrderInfo } from './pages/order-info/index'
 import { ListProduct } from './pages/list-product'
 import { Login } from './pages/login'
+import { Forgotpassword } from './pages/login/forgotpassword';
+import Transaction from './pages/transaction';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <div className="App">
       <BrowserRouter>
@@ -34,6 +34,10 @@ function App() {
           </Route>
 
           <Route path="/login" element={<Login />}>
+          </Route>
+          <Route path="/forgot" element={<Forgotpassword />}>
+          </Route>
+          <Route path="/transaction" element={<Transaction />}>
           </Route>
         </Routes>
       </BrowserRouter>

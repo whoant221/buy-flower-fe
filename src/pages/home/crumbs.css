@@ -83,7 +83,8 @@
 .l_item,
 .r_item {
     display: block;
-    float: left
+    float: left;
+    text-align: left
 }
 
 .l_item {
@@ -2449,6 +2450,10 @@ table.style tr.head {
     margin-top: 10px
 }
 
+.buy-now>a {
+    color: #fff;
+}
+
 .area_order .buy-now,
 .area_order .add-cart,
 .on-phone .call-now,
@@ -2624,19 +2629,17 @@ table.style tr.head {
     width: 75%;
     float: left;
     margin-top: 10px;
-    padding-right: 20px
+    padding-right: 20px;
+    margin-bottom: 12px;
 }
 
 .cart-items .cart-item {
     width: 100%;
     position: relative;
     border: 2px solid #e1e1e1;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    -webkit-box-shadow: 0 2px 5px #0000001a;
-    -moz-box-shadow: 0 2px 5px #0000001a;
     box-shadow: 0 2px 5px #0000001a;
-    padding: 15px
+    padding: 15px;
+    display: flex;
 }
 
 .cart-items .close {
@@ -2648,7 +2651,7 @@ table.style tr.head {
 }
 
 .cart-items .img {
-    width: 64px;
+    width: 84px;
     float: left;
     margin-right: 15px;
     clear: left
@@ -2659,6 +2662,7 @@ table.style tr.head {
 }
 
 .cart-items .text {
+    text-align: start;
     width: calc(100% - 64px - 15px);
     float: left;
     clear: right;
@@ -2728,6 +2732,7 @@ table.style tr.head {
 }
 
 .total .each-row {
+    text-align: start;
     width: 100%;
     float: left;
     padding-bottom: 7px;
@@ -2760,12 +2765,7 @@ table.style tr.head {
     clear: both
 }
 
-.frm-data div {
-    margin-bottom: 1rem;
-    clear: both;
-    width: 100%;
-    float: left
-}
+
 
 .frm-data div label {
     cursor: pointer;
@@ -2903,4 +2903,9 @@ table.style tr.head {
 .p-info label {
     clear: none !important;
     width: calc(100% - 30px) !important
+}
+
+.the_same_item_flower {
+    display: flex !important;
+    flex-wrap: wrap;
 }
