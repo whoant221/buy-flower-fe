@@ -1,60 +1,117 @@
-import {
-    Checkbox, DatePicker, Form, Select, Button,
-    Input
-} from 'antd';
-import React from 'react';
-import { useState } from 'react';
-import Paypal from '../../component/paypal';
+import { Button, DatePicker, Form, Input, Modal, Select } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { Navbar } from '../../layout/header/navbar';
-import { Modal } from 'antd';
-import { useEffect } from 'react';
 import { addOrder, getCart } from '../../api/detail_product';
 import { formatCurrency } from '../../helper'
 import { getinfoUser } from '../../api/home';
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { useNavigate } from 'react-router-dom';
-import { attachTypeApi } from 'antd/lib/message';
+import { getVouchersByPrice, validVoucher } from "../../api/voucher.js";
 
+const dateFormatList = ['DD/MM/YYYY', 'DD/MM/YY'];
 
 export function OrderInfo() {
+    const token = localStorage.getItem('token')
     let navigate = useNavigate();
     const [form] = Form.useForm();
+
     const [disablePaypal, setDisablePaypal] = useState(true)
-    const token = localStorage.getItem('token')
     const [cart, setCard] = useState([])
-    const [user, setUser] = useState([])
+
     const [sum, setSum] = useState(0)
-    const [inforReceive, setInforReceve] = useState()
-    let dataSave = {}
+    const [discount, setDiscount] = useState(0);
+    const [infoReceive, setInfoReceive] = useState({
+        "receive_address": "",
+        "receiver": "",
+        "receive_phone": "",
+        "delivery_time": "",
+        "gift_cart_for": "",
+        "reason": "",
+        "message": "",
+        "currentCode": ''
+    });
+    const [vouchers, setVouchers] = useState([]);
+
     const { TextArea } = Input;
 
-    const onSave = () => {
-        success()
-
-        // navigate("/")
-    }
-
-    const success = async () => {
+    const onSave = async () => {
+        await addOrder(infoReceive, token)
         Modal.success({
             content: 'Bạn đã đặt thành công. Chúng tôi sẽ liên lạc với bạn sớm nhất có thể để xác nhận thông tin này.',
         });
 
-    };
+        // navigate("/")
+    }
 
     const onFinish = async (e) => {
         setDisablePaypal(false)
-        setInforReceve(e)
-        await addOrder({ "receive_address": inforReceive.address }, token)
-        dataSave = e
+        setInfoReceive(prevState => ({
+            ...prevState,
+            ...e
+        }));
+        console.log(infoReceive)
+        await addOrder(infoReceive, token)
     }
+
+    const handleChangeVoucher = async (code) => {
+        if (code === undefined) {
+            setInfoReceive(prevState => ({
+                ...prevState,
+                currentCode: ''
+            }));
+
+            setDiscount(0);
+            return;
+        }
+        try {
+            const { data: { sale_price } } = await validVoucher(code, sum)
+            if (sale_price === 0) {
+                setInfoReceive(prevState => ({
+                    ...prevState,
+                    currentCode: ''
+                }));
+                Modal.error({
+                    content: 'Bạn không đủ điều kiện để sử dụng voucher này',
+                });
+                return;
+            }
+
+            setInfoReceive(prevState => ({
+                ...prevState,
+                currentCode: code
+            }));
+
+            setDiscount(sale_price);
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
     useEffect(() => {
         async function fetch() {
             setCard((await getCart(token)).data.shopping_carts)
-            setUser(await getinfoUser(token))
+            const newUser = await getinfoUser(token)
+            form.setFieldsValue({
+                receive_address: newUser.address,
+                receiver: newUser.name,
+                receive_phone: newUser.phone_number
+            });
         }
+
         fetch()
     }, [])
+
+    useEffect(() => {
+        const getVouchers = async () => {
+            try {
+                const { data: { vouchers } } = await getVouchersByPrice(sum);
+                setVouchers(vouchers);
+            } catch (e) {
+                console.error(e)
+            }
+        }
+        getVouchers();
+    }, [sum]);
 
     let total = 0
     if (cart.length > 0) {
@@ -63,12 +120,9 @@ export function OrderInfo() {
         })
 
     }
-    useEffect(() => { setSum(total) }, [total])
-
-
-    if (user) {
-        form.setFieldsValue(user)
-    }
+    useEffect(() => {
+        setSum(total)
+    }, [total])
 
     return (
         <div>
@@ -77,7 +131,7 @@ export function OrderInfo() {
                 <div id="content">
                     <div className="wrapper">
                         <div className="clearfix" />
-                        <div className=" frm-data" >
+                        <div className=" frm-data">
                             {/* <h2>Thông tin người mua</h2> */}
                             <Form
                                 form={form}
@@ -133,7 +187,7 @@ export function OrderInfo() {
 
                                 <Form.Item
                                     label="Tên người nhận:"
-                                    name="name"
+                                    name="receiver"
                                     style={{ paddingTop: 90 }}
                                     rules={[
                                         {
@@ -147,7 +201,7 @@ export function OrderInfo() {
 
                                 <Form.Item
                                     label="Điện thoại:"
-                                    name="phone_number"
+                                    name="receive_phone"
                                     rules={[
                                         {
                                             required: true,
@@ -160,7 +214,7 @@ export function OrderInfo() {
 
                                 <Form.Item
                                     label="Địa chỉ:"
-                                    name="address"
+                                    name="receive_address"
                                     rules={[
                                         {
                                             required: true,
@@ -172,65 +226,113 @@ export function OrderInfo() {
                                 </Form.Item>
 
                                 {/* <h2>Thời gian giao hàng</h2> */}
-                                <Form.Item label="Thời gian giao hàng" style={{ width: 300 }}>
+                                <Form.Item label="Thời gian giao hàng"
+                                    name="delivery_time"
+                                    style={{ width: 300 }}>
+                                    {/*<DatePicker*/}
+                                    {/*    defaultValue={dayjs(moment.now(), dateFormatList[0])}*/}
+                                    {/*    format={dateFormatList}/>*/}
                                     <DatePicker />
                                 </Form.Item>
                                 <h2>Lời nhắn</h2>
                                 <div>
-                                    <Form.Item label="Thiệp gửi tặng cho:" defaultValue="Thiệp gửi tặng cho" style={{ paddingTop: 50 }}>
+                                    <Form.Item label="Thiệp gửi tặng cho:"
+                                        defaultValue="Thiệp gửi tặng cho"
+                                        name="gift_cart_for"
+                                        style={{ paddingTop: 50 }}>
                                         <Select>
-                                            <Select.Option value="brother">Anh, chị, em - Brother, sister</Select.Option>
-                                            <Select.Option value="Friends">Bạn bè - Friends</Select.Option>
-                                            <Select.Option value="Parent">Bố Mẹ - Parent</Select.Option>
-                                            <Select.Option value="Husband">Chồng - Husband</Select.Option>
-                                            <Select.Option value="Notme">Đặt giúp người khác - Not me</Select.Option>
-                                            <Select.Option value="Partners">Đối tác, khách hàng - Partners/Customer</Select.Option>
-                                            <Select.Option value="Boss">Đồng nghiệp/Sếp - Co-worker/Boss</Select.Option>
-                                            <Select.Option value="Lover">Người yêu - Lover</Select.Option>
-                                            <Select.Option value="Wife">Vợ -Wife</Select.Option>
-                                            <Select.Option value="Other">Khác - Other</Select.Option>
+                                            <Select.Option value="brother">Anh,
+                                                chị, em - Brother,
+                                                sister</Select.Option>
+                                            <Select.Option value="Friends">Bạn
+                                                bè - Friends</Select.Option>
+                                            <Select.Option value="Parent">Bố Mẹ
+                                                - Parent</Select.Option>
+                                            <Select.Option value="Husband">Chồng
+                                                - Husband</Select.Option>
+                                            <Select.Option value="Notme">Đặt
+                                                giúp người khác - Not
+                                                me</Select.Option>
+                                            <Select.Option value="Partners">Đối
+                                                tác, khách hàng -
+                                                Partners/Customer</Select.Option>
+                                            <Select.Option value="Boss">Đồng
+                                                nghiệp/Sếp -
+                                                Co-worker/Boss</Select.Option>
+                                            <Select.Option value="Lover">Người
+                                                yêu - Lover</Select.Option>
+                                            <Select.Option value="Wife">Vợ
+                                                -Wife</Select.Option>
+                                            <Select.Option value="Other">Khác -
+                                                Other</Select.Option>
                                         </Select>
                                     </Form.Item>
 
                                 </div>
                                 <div>
 
-                                    <Form.Item label="Nhân dịp:" defaultValue="Nhân dịp">
+                                    <Form.Item label="Nhân dịp:"
+                                        name="reason"
+                                        defaultValue="Nhân dịp">
                                         <Select>
-                                            <Select.Option value="Congratulations">Chúc mừng - Congratulations</Select.Option>
-                                            <Select.Option value="Grand">Khai trương - Grand openings</Select.Option>
-                                            <Select.Option value="Birthday">Sinh nhật - Birthday</Select.Option>
-                                            <Select.Option value="Thankyou">Cảm ơn - Thankyou</Select.Option>
-                                            <Select.Option value="Sympathy">Chia buồn - Sympathy</Select.Option>
-                                            <Select.Option value="Love">Làm quen/Tình yêu - Dating/Love</Select.Option>
-                                            <Select.Option value="Anniversary">Ngày kỉ niệm - Anniversary</Select.Option>
-                                            <Select.Option value="Occacion">Ngày lễ - Occacion day (20/10, 8/3, 20/11)</Select.Option>
-                                            <Select.Option value="JustLike">Thích thì tặng - Just Because</Select.Option>
-                                            <Select.Option value="Sorry">Xin lỗi - Sorry</Select.Option>
-                                            <Select.Option value="Others">Khác - Others</Select.Option>
+                                            <Select.Option
+                                                value="Congratulations">Chúc
+                                                mừng -
+                                                Congratulations</Select.Option>
+                                            <Select.Option value="Grand">Khai
+                                                trương - Grand
+                                                openings</Select.Option>
+                                            <Select.Option value="Birthday">Sinh
+                                                nhật - Birthday</Select.Option>
+                                            <Select.Option value="Thankyou">Cảm
+                                                ơn - Thankyou</Select.Option>
+                                            <Select.Option value="Sympathy">Chia
+                                                buồn - Sympathy</Select.Option>
+                                            <Select.Option value="Love">Làm
+                                                quen/Tình yêu -
+                                                Dating/Love</Select.Option>
+                                            <Select.Option value="Anniversary">Ngày
+                                                kỉ niệm -
+                                                Anniversary</Select.Option>
+                                            <Select.Option value="Occacion">Ngày
+                                                lễ - Occacion day (20/10, 8/3,
+                                                20/11)</Select.Option>
+                                            <Select.Option value="JustLike">Thích
+                                                thì tặng - Just
+                                                Because</Select.Option>
+                                            <Select.Option value="Sorry">Xin lỗi
+                                                - Sorry</Select.Option>
+                                            <Select.Option value="Others">Khác -
+                                                Others</Select.Option>
 
                                         </Select>
                                     </Form.Item>
                                 </div>
 
-                                <Form.Item label="Thông điệp:">
-                                    <TextArea rows={4} />
-                                </Form.Item>
-                                <Form.Item label="Lời nhắn: ">
+                                <Form.Item label="Lời nhắn: " name="message">
                                     <TextArea rows={4} />
                                 </Form.Item>
 
                                 <Form.Item
                                 >
-                                    <Button type="primary" htmlType="submit" className="e-buy" style={{ height: 40, width: "50%" }}>
+                                    <Button type="primary" htmlType="submit"
+                                        className="e-buy" style={{
+                                            height: 40,
+                                            width: "50%"
+                                        }}>
                                         Kiểm tra thông tin
                                     </Button>
 
                                 </Form.Item>
 
-                                <div style={{ height: 40, width: "50%", marginLeft: "26%" }}>
+                                <div style={{
+                                    height: 40,
+                                    width: "50%",
+                                    marginLeft: "26%"
+                                }}>
                                     {/* <Paypal onSave={onSave} disable={disablePaypal} sum={sum} /> */}
-                                    <PayPalScriptProvider options={{ "client-id": "AVqiTjdFARfZglLj1eJD78oZusJafNJTL6fslJrWl3bH87vI-HZM_l9kaaNJ3AJsX8t9KCWrpOoHgVQc" }}>
+                                    <PayPalScriptProvider
+                                        options={{ "client-id": "AVqiTjdFARfZglLj1eJD78oZusJafNJTL6fslJrWl3bH87vI-HZM_l9kaaNJ3AJsX8t9KCWrpOoHgVQc" }}>
                                         <PayPalButtons
                                             disabled={disablePaypal}
                                             createOrder={(data, actions) => {
@@ -260,19 +362,35 @@ export function OrderInfo() {
                         </div>
                         <div className="sc-right">
                             <Input.Group compact style={{ textAlign: "left" }}>
-                                <Input style={{ width: 'calc(100% - 200px)' }} placeholder="Voucher" />
-                                <Button type="primary">Submit</Button>
+                                <Select
+                                    style={{
+                                        width: '100%',
+                                    }}
+                                    onChange={handleChangeVoucher}
+                                    allowClear
+                                    options={vouchers && vouchers.map(voucher => {
+                                        return {
+                                            label: voucher.condition_str,
+                                            value: voucher.code
+                                        }
+                                    })}
+                                />
                             </Input.Group>
                             {
                                 cart.length > 0 ? cart.map(e => {
-                                    return <div className="cart-item" data-id={13376}>
-                                        <div className="img" style={{ width: 100, marginBottom: 20 }}>
+                                    return <div className="cart-item"
+                                        data-id={13376}>
+                                        <div className="img" style={{
+                                            width: 100,
+                                            marginBottom: 20
+                                        }}>
                                             <img src={e.images[0]} />
                                         </div>
                                         <div className="text" style={{ paddingTop: 50 }}>
                                             <a href="">{e.name}</a>
                                             <p><span style={{ color: "#000" }}>{e.amount} x {formatCurrency(e.original_price)} đ</span></p>
                                         </div>
+                                        <div className="clearfix" />
                                     </div>
                                 }) : <></>
                             }
@@ -280,15 +398,17 @@ export function OrderInfo() {
                             <div className="total">
                                 <div className="each-row">
                                     <span>Tạm tính:</span>
-                                    <strong id="subtotal">{formatCurrency(sum) || 0} đ</strong>
+                                    <strong
+                                        id="subtotal">{formatCurrency(sum) || 0} đ</strong>
                                 </div>
                                 <div className="each-row">
                                     <span>Phụ phí: </span>
-                                    <strong id="sub-fee"> -</strong>
+                                    <strong id="sub-fee">0 đ</strong>
                                 </div>
                                 <div className="each-row">
                                     <span>Giảm giá: </span>
-                                    <strong id="discount"> -</strong>
+                                    <strong
+                                        id="discount"> {formatCurrency(discount) || 0} đ</strong>
                                 </div>
                                 <div className="each-row">
                                     <span>Hóa đơn VAT: </span>
@@ -296,7 +416,8 @@ export function OrderInfo() {
                                 </div>
                                 <div className="row each-row last">
                                     <span>Tổng cộng: </span>
-                                    <strong id="total"> {formatCurrency(sum) || 0} đ</strong>
+                                    <strong
+                                        id="total"> {formatCurrency(sum - discount) || 0} đ</strong>
                                 </div>
                             </div>
                         </div>
