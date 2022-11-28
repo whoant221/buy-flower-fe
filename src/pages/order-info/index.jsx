@@ -269,11 +269,10 @@ export function OrderInfo() {
                                         <div className="img" style={{ width: 100, marginBottom: 20 }}>
                                             <img src={e.images[0]} />
                                         </div>
-                                        <div className="text">
+                                        <div className="text" style={{ paddingTop: 50 }}>
                                             <a href="">{e.name}</a>
-                                            <p><span>{e.amount} x {formatCurrency(e.original_price)} đ</span></p>
+                                            <p><span style={{ color: "#000" }}>{e.amount} x {formatCurrency(e.original_price)} đ</span></p>
                                         </div>
-                                        <div className="clearfix" />
                                     </div>
                                 }) : <></>
                             }

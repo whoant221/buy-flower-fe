@@ -2662,6 +2662,7 @@ table.style tr.head {
 }
 
 .cart-items .text {
+    color: #000 !important;
     text-align: start;
     width: calc(100% - 64px - 15px);
     float: left;
@@ -2670,6 +2671,7 @@ table.style tr.head {
 }
 
 .text a {
+
     font-weight: 600;
     display: block;
     color: #bd2026
@@ -2732,6 +2734,7 @@ table.style tr.head {
 }
 
 .total .each-row {
+    color: #000 !important;
     text-align: start;
     width: 100%;
     float: left;
@@ -2908,4 +2911,13 @@ table.style tr.head {
 .the_same_item_flower {
     display: flex !important;
     flex-wrap: wrap;
+}
+
+.tab_comment {
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2), 0 4px 15px 0 rgba(0, 0, 0, 0.19);
+    width: 100%;
+    border-radius: 15px;
+    text-align: left;
+    padding: 10px 40px;
+    margin-bottom: 20px;
 }

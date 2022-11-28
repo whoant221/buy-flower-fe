@@ -2,11 +2,12 @@ import { Footer } from '../../layout/footer'
 import { Navbar } from '../../layout/header/navbar'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { addShopingCart, getDetailFlower, getCart } from '../../api/detail_product'
+import { addShopingCart, getDetailFlower, getCart, getComment, addComment } from '../../api/detail_product'
 import { formatCurrency } from '../../helper'
 import { useMutation } from 'react-query';
 import { Button, notification, Form, Input } from 'antd';
 import { getFlower } from '../../api/home'
+import { useForm } from 'antd/es/form/Form'
 
 export function DetailProduct() {
     let navigate = useNavigate();
@@ -14,13 +15,16 @@ export function DetailProduct() {
     const [infoFlower, setInfoFlower] = useState();
     const [sameFlower, setSameFlower] = useState([]);
     const [cart, setCart] = useState([])
+    const [listComment, setListComment] = useState([])
     const token = localStorage.getItem('token')
+    const [form] = Form.useForm();
 
     useEffect(() => {
         async function fetchData() {
             setInfoFlower((await getDetailFlower(slug)))
             setCart((await (await getCart(token)).data.shopping_carts
             ))
+            setListComment((await (await getComment({ flower_id: slug }, token)).data.comments))
         }
         fetchData()
     }, [])
@@ -58,6 +62,17 @@ export function DetailProduct() {
             }
         }
 
+    }
+
+    const handleSubmitComment = async (e) => {
+        const dataComment = {
+            "flower_id": slug,
+            "content": e.comment
+        }
+        await addComment(dataComment, token).catch(err => notification.error({ message: "Bạn chưa mua sản phẩm này" }))
+
+        setListComment((await (await getComment({ flower_id: slug }, token)).data.comments))
+        form.resetFields()
     }
 
 
@@ -146,9 +161,56 @@ export function DetailProduct() {
                                     rose 22</a><span className="vn"><em className="oprice">600.000 đ</em><em>450.000
                                         đ</em></span></div><span className="ibadge isale">Sale</span>
                             </div> */}
+
                         </div>
                         <div className="clearfix" />
+                        <div className="clearfix" />
+                        <div className="clearfix" />
                         <a href={`/product?category=${infoFlower?.category_ids[0]}`} className="viewmore">Xem thêm</a>
+                    </div>
+
+                    <div className="clearfix" />
+                    <div className="clearfix" />
+                    <div style={{ marginLeft: 65 }}>
+                        <h2 className=' margin_top_15 ' style={{ textAlign: "left", fontSize: 16, fontWeight: 600, color: "#bd2026", textTransform: "uppercase" }}>Đánh giá</h2>
+                        {
+                            listComment.length > 0 ? listComment.map(e => {
+                                return <div style={{ float: "left" }} className={"tab_comment"}>
+                                    <div style={{ display: "flex", alignItems: "center" }}>
+                                        <img src='https://cdn-icons-png.flaticon.com/512/149/149071.png' style={{ paddingRight: 10, width: 50 }}>
+                                        </img>
+                                        <div>
+                                            <div style={{ fontWeight: 600, color: "#bd2026" }}>
+                                                {e.name}
+                                            </div>
+                                            <div >{e.content}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }) : <></>
+                        }
+                        <Form
+                            name="comment"
+                            onFinish={handleSubmitComment}
+                            // onFinishFailed={onFinishFailed}
+                            autoComplete="off"
+                            style={{ float: "left", width: "100%" }}
+                            layout="inline"
+                            form={form}
+                        >
+                            <Form.Item
+                                name="comment"
+                                rules={[{ required: true, message: 'Hãy nhập trước khi bình luận' }]}
+                                style={{ width: "89%", height: 48 }}
+                            >
+                                <Input placeholder="Nhập bình luận" style={{ height: 50 }} />
+                            </Form.Item>
+                            <Form.Item style={{ paddingTop: 10 }}>
+                                <Button type="primary" htmlType="submit" >
+                                    Bình luận
+                                </Button>
+                            </Form.Item>
+                        </Form>
                     </div>
                     <Footer />
                 </div>

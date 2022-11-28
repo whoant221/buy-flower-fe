@@ -88,13 +88,6 @@ export function Navbar() {
         else navigate('/login')
     }
 
-    useEffect(() => {
-        async function fetch() {
-            setListOrder((await getOrder({ state: current }, token)).data.orders)
-        }
-        fetch()
-    }, [current])
-    console.log(listOrder)
 
     if (infoUser) {
         form.setFieldsValue(infoUser)
