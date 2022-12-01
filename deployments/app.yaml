@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fe-buy-flower-client
+  namespace: buy-flower-staging
+  labels:
+    app: fe-buy-flower-client
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: fe-buy-flower-client
+      labels:
+        app: fe-buy-flower-client
+    spec:
+      nodeSelector:
+        ram: high
+      containers:
+        - name: be-voucher-traveloka
+          image: ghcr.io/whoant221/buy-flower-fe:VERSION
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              memory: "300Mi"
+              cpu: "300m"
+            requests:
+              memory: "200Mi"
+              cpu: "200m"
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: fe-buy-flower-client
