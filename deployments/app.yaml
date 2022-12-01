@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fe-buy-flower-client
+  name: buy-flower-client-fe
   namespace: buy-flower-staging
   labels:
-    app: fe-buy-flower-client
+    app: buy-flower-client-fe
 spec:
   replicas: 1
   template:
     metadata:
-      name: fe-buy-flower-client
+      name: buy-flower-client-fe
       labels:
-        app: fe-buy-flower-client
+        app: buy-flower-client-fe
     spec:
       nodeSelector:
         ram: high
       containers:
-        - name: fe-buy-flower-client
+        - name: buy-flower-client-fe
           image: ghcr.io/whoant221/buy-flower-fe:VERSION
           imagePullPolicy: IfNotPresent
           ports:
@@ -31,4 +31,4 @@ spec:
       restartPolicy: Always
   selector:
     matchLabels:
-      app: fe-buy-flower-client
+      app: buy-flower-client-fe

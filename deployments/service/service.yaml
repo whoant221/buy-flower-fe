@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: fe-buy-flower-client
+  name: buy-flower-client-fe
   namespace: buy-flower-staging
 spec:
   selector:
-    app: fe-buy-flower-client
+    app: buy-flower-client-fe
   ports:
     - port: 81
       targetPort: 80
