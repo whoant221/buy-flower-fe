@@ -16,7 +16,7 @@ spec:
       nodeSelector:
         ram: high
       containers:
-        - name: be-voucher-traveloka
+        - name: fe-buy-flower-client
           image: ghcr.io/whoant221/buy-flower-fe:VERSION
           imagePullPolicy: IfNotPresent
           ports:
