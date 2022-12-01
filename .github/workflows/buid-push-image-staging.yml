@@ -37,14 +37,6 @@ jobs:
           context: .
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}
-
-  deploy-app:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    needs: build-and-push-image
-    steps:
       - name: Setup K8s
         uses: tale/kubectl-action@v1
         with:
@@ -52,4 +44,4 @@ jobs:
       - name: Run deploy app
         run: |
           chmod +x ./deployments/update_version_and_deploy.sh
-          ./deployments/update_version_and_deploy.sh ${{ env.IMAGE_VERSION }}
+          ./deployments/update_version_and_deploy.sh ${{ env.IMAGE_VERSION }}    
