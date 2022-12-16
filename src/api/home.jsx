@@ -2,8 +2,7 @@ import { getAPI, postAPI, putAPI } from "./axios";
 import Axios from "axios";
 
 
-
-export const getFlower = async (param) => {
+export const getFlower = async(param) => {
     try {
         const data = await getAPI(`/api/v1/flowers`, param);
         return data;
@@ -13,7 +12,7 @@ export const getFlower = async (param) => {
 };
 
 
-export const getCategory = async () => {
+export const getCategory = async() => {
     try {
         const data = await getAPI(`/api/v1/categories`);
         return data;
@@ -22,7 +21,7 @@ export const getCategory = async () => {
     }
 };
 
-export const getDetailCategory = async (id) => {
+export const getDetailCategory = async(id) => {
     try {
         const data = await getAPI(`/api/v1/categories/${id}`);
         return data;
@@ -31,7 +30,7 @@ export const getDetailCategory = async (id) => {
     }
 };
 
-export const getColor = async () => {
+export const getColor = async() => {
     try {
         const data = await getAPI(`/api/v1/vars/color`);
         return data;
@@ -40,7 +39,7 @@ export const getColor = async () => {
     }
 };
 
-export const editDetailCategory = async (param, token) => {
+export const editDetailCategory = async(param, token) => {
     const config = {
         headers: {
             Authorization: `Bearer ${token}`
@@ -54,7 +53,7 @@ export const editDetailCategory = async (param, token) => {
     }
 };
 
-export const forgotPassword = async (body) => {
+export const forgotPassword = async(body) => {
     try {
         const data = await postAPI(`/api/v1/sessions/reset_password`, body);
         return data;
@@ -64,14 +63,14 @@ export const forgotPassword = async (body) => {
 };
 
 
-export const getinfoUser = async (token) => {
+export const getinfoUser = async(token) => {
     try {
         const config = {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         };
-        const res = Axios.get('http://194.233.92.2:30001/api/v1/users', config).then((res) => res.data);
+        const res = Axios.get('https://api-buy-flower.votuan.xyz/api/v1/users', config).then((res) => res.data);
 
         return res;
     } catch (error) {
