@@ -7,7 +7,7 @@ import cart from '../../assets/shopping_cart.svg'
 import user from '../../assets/user.svg'
 import { Link } from "react-router-dom";
 import { useEffect, useState } from 'react';
-import { getCategory, getinfoUser, editDetailCategory, getColor } from '../../api/home';
+import { getCategory, getinfoUser, editDetailCategory, getColor, getBuds } from '../../api/home';
 import { useNavigate } from 'react-router-dom';
 import { Button, Modal, Form, Input, Tabs } from 'antd';
 import { getOrder } from '../../api/detail_product'
@@ -23,7 +23,7 @@ export function Navbar() {
     const [infoUser, setInfoUser] = useState()
     const [current, setCurrent] = useState('init');
     const [listcolor, setListColor] = useState([])
-    const [listOrder, setListOrder] = useState([])
+    const [listBuds, setListBuds] = useState([])
     const userName = localStorage.getItem('userName')
     const token = localStorage.getItem('token')
 
@@ -33,6 +33,7 @@ export function Navbar() {
             setlistCategories((await getCategory()).categories)
             setInfoUser((await getinfoUser(token)))
             setListColor((await getColor()).colors)
+            setListBuds((await getBuds()).buds)
         }
         fetch();
     }, [])
@@ -185,7 +186,12 @@ export function Navbar() {
                         <li className="has_child">
                             <h2><a href="/product" title="Hoa tươi">Hoa tươi</a></h2>
                             <div>
-                                <h3><Link to={`/product?flower=rose`} title="Only rose">Only
+                                {
+                                    listBuds.length > 0 && listBuds.map(e => {
+                                        return <h3><a href={`/product?bud=${e.id}`} title="Only rose">{e.name}</a></h3>
+                                    })
+                                }
+                                {/* <h3><Link to={`/product?flower=rose`} title="Only rose">Only
                                     rose</Link></h3>
                                 <h3><Link to={`/product?flower=hong`} title="Hoa hồng">Hoa
                                     hồng</Link></h3>
@@ -199,7 +205,7 @@ export function Navbar() {
                                 <h3><Link to={`/product?flower=hoaly`} title="Hoa ly">Hoa ly</Link>
                                 </h3>
                                 <h3><Link to={`/product?flower=hoacuc`} title="Hoa cúc">Hoa cúc</Link>
-                                </h3>
+                                </h3> */}
                             </div>
                         </li>
                         <li className="has_child">
@@ -213,7 +219,7 @@ export function Navbar() {
                             </div>
                         </li>
                         <li>
-                            <h2><Link to={`/product?category=14`} title="Hoa sinh nhật">Hoa Cưới</Link></h2>
+                            <h2><Link to={`/voucher`}>Voucher tích điểm</Link></h2>
                         </li>
                     </ul>
                 </div>

@@ -15,10 +15,12 @@ export function ListProduct() {
     const paramCategory = searchParams.get('category')
     const paramName = searchParams.get('name')
     const paramColor = searchParams.get('color')
+    const paramBud = searchParams.get('bud')
+
     const [order, setOrder] = useState([
         { id: 1, order_by: "", name: "Mặc định", active: "active" },
-        { id: 2, order_by: "price_asc", name: "Giá từ thấp tới cao", active: "none" },
-        { id: 3, order_by: "price_desc", name: "Giá từ cao tới thấp", active: "none" },
+        { id: 2, order_by: "price_desc", name: "Giá từ thấp tới cao", active: "none" },
+        { id: 3, order_by: "price_asc", name: "Giá từ cao tới thấp", active: "none" },
         { id: 4, order_by: "name_asc", name: "TÊN: A-Z", active: "none" },
         { id: 5, order_by: "name_desc", name: "TÊN: Z-A", active: "none" }
     ])

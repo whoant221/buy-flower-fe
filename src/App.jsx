@@ -14,6 +14,7 @@ import { ListProduct } from './pages/list-product'
 import { Login } from './pages/login'
 import { Forgotpassword } from './pages/login/forgotpassword';
 import Transaction from './pages/transaction';
+import Voucher from './pages/voucher';
 
 function App() {
   return (
@@ -38,6 +39,9 @@ function App() {
           <Route path="/forgot" element={<Forgotpassword />}>
           </Route>
           <Route path="/transaction" element={<Transaction />}>
+          </Route>
+
+          <Route path="/voucher" element={<Voucher />}>
           </Route>
         </Routes>
       </BrowserRouter>
