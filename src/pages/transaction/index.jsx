@@ -134,6 +134,7 @@ export default function Transaction() {
                                          style={{ borderTopRightRadius: 25, borderBottomRightRadius: 25 }}>
                                         <div>Nơi nhận: {e.receive_address}</div>
                                         <div>Tổng tiền: {formatCurrency(e.sale_price)} VND</div>
+                                        <div>Mã vận đơn: {e.shipping_link} </div>
                                         <div>Ghi chú: {e.note || "Không"}</div>
                                     </div>
                                     <div className='btn_cancel_transaction' onClick={() => handleClickComment(e)}>Bình
