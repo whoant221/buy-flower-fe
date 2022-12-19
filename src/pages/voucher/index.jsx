@@ -22,8 +22,7 @@ export default function Voucher() {
         }
         fetch()
     }
-
-    useEffect(() => {
+    const reFetchData = () => {
         const fetch = async () => {
             const getPoint = await getPointVoucher()
             setPoint(getPoint.data.point)
@@ -33,14 +32,20 @@ export default function Voucher() {
             setMyVoucher(listMyvoucher.data.vouchers)
         }
         fetch()
+    }
+    useEffect(() => {
+        reFetchData()
     }, [])
 
     const handleClickExchangeVoucher = async (e) => {
         await exchangeVoucher({ code: e.code }).then(res => {
             notification.success({ message: "Đổi thành công!" })
+            reFetchData()
         }).catch(err => {
-            notification.error({ message: "Có lỗi gì đó!" })
+            console.log(err);
+            notification.error({ message: err.response.data[0].message })
         })
+
     }
 
     return (
@@ -70,7 +75,7 @@ export default function Voucher() {
                                 >
                                     <div>Nội dung: {e.condition_str}</div>
                                     <div>Giảm giá: {e.discount} %</div>
-                                    <div>Thời hạn: {moment(e.effective_at).format("DD/MM/YYY")} - {moment(e.expiration_at).format("DD/MM/YYY")} </div>
+                                    <div>Thời hạn: {moment(e.effective_at).format("DD/MM/YYYY")} - {moment(e.expiration_at).format("DD/MM/YYYY")} </div>
                                     <div>Ngưỡng tiền được áp dụng: {e.threshold} VND</div>
                                 </div>
                             </div>
@@ -85,7 +90,7 @@ export default function Voucher() {
                                 >
                                     <div>Nội dung: {e.condition_str}</div>
                                     <div>Giảm giá: {e.discount} %</div>
-                                    <div>Thời hạn: {moment(e.effective_at).format("DD/MM/YYY")} - {moment(e.expiration_at).format("DD/MM/YYY")} </div>
+                                    <div>Thời hạn: {moment(e.effective_at).format("DD/MM/YYYY")} - {moment(e.expiration_at).format("DD/MM/YYYY")} </div>
                                     <div>Ngưỡng tiền được áp dụng: {e.threshold} VND</div>
                                     <div>Số điểm cần để quy đổi: {e.point}</div>
                                 </div>
