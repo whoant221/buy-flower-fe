@@ -1,7 +1,7 @@
 import Axios from "axios";
 
 export const axiosBase = Axios.create({
-    baseURL: "http://194.233.92.2:30001",
+    baseURL: "https://api-buy-flower.votuan.xyz",
     timeout: 30000,
     maxContentLength: 1000000,
     maxBodyLength: 1000000,

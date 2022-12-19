@@ -44,4 +44,4 @@ jobs:
       - name: Run deploy app
         run: |
           chmod +x ./deployments/update_version_and_deploy.sh
-          ./deployments/update_version_and_deploy.sh ${{ env.IMAGE_VERSION }}
+          ./deployments/update_version_and_deploy.sh ${{ env.IMAGE_VERSION }}    
