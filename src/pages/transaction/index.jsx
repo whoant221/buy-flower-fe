@@ -21,6 +21,7 @@ export default function Transaction() {
             setListOrder((await getOrder({ state: "pending" }, token)).data.orders)
         }
 
+
         fetch()
     }, [])
 
@@ -28,7 +29,7 @@ export default function Transaction() {
         async function fetch() {
             setListOrder((await getOrder({ state: e }, token)).data.orders)
         }
-        console.log(e)
+
         fetch()
     }
 
@@ -80,7 +81,7 @@ export default function Transaction() {
 
             </Modal>
             <Navbar />
-            <h2 style={{ textAlign: "left", paddingTop: "150px" }}>Lịch sử giao dịch</h2>
+            <h2 style={{ textAlign: "left", paddingTop: "150px" }} >Lịch sử giao dịch</h2>
             <div style={{ float: 'left', width: "1200px" }}>
                 <Tabs defaultActiveKey="1" tabPosition={"left"} style={{
                     height: 220,
@@ -93,9 +94,9 @@ export default function Transaction() {
                     <Tabs.TabPane tab="Đang chờ xác nhận" key="pending">
                         {
                             listOrder.length > 0 ? listOrder.map(e => {
-                                return <div className='item_transaction' >
-                                    <div style={{ width: "auto" }}><img className='img_item_transaction' src={e.order_details?.[0].images?.[0]}></img></div>
-                                    <div className='content_item_transaction' onClick={() => handleClickItem(e)}>
+                                return <div className='item_transaction' onClick={() => handleClickItem(e)}>
+                                    <img className='img_item_transaction' src={e.order_details?.[0].images?.[0]}></img>
+                                    <div className='content_item_transaction'>
                                         <div>Nơi nhận: {e.receive_address}</div>
                                         <div>Tổng tiền: {formatCurrency(e.sale_price)} VND</div>
                                         <div>Ghi chú: {e.note || "Không"}</div>
@@ -110,39 +111,47 @@ export default function Transaction() {
                     <Tabs.TabPane tab="Đang giao" key="processing">
                         {
                             listOrder.length > 0 ? listOrder.map(e => {
-                                return <div className='item_transaction' >
-                                    <div style={{ width: "auto" }}><img className='img_item_transaction' src={e.order_details?.[0].images?.[0]}></img></div>
-                                    <div className='content_item_transaction' onClick={() => handleClickItem(e)}>
+                                return <div className='item_transaction' onClick={() => handleClickItem(e)}>
+                                    <img className='img_item_transaction' src={e.order_details?.[0].images?.[0]}></img>
+                                    <div className='content_item_transaction'>
+                                        <div>Trạng thái: {e.state}</div>
                                         <div>Nơi nhận: {e.receive_address}</div>
                                         <div>Tổng tiền: {formatCurrency(e.sale_price)} VND</div>
                                         <div>Mã vận đơn: <a href={e.shipping_link}>{e.shipping_link}</a>  </div>
                                         <div>Ghi chú: {e.note || "Không"}</div>
                                     </div>
-                                    <div className='btn_cancel_transaction'
-                                        onClick={() => handleClickCancel(e)}><Button type="primary" onClick={() => handleClickComment(e)}>Cancel</Button>
+                                    <div className='btn_cancel_transaction' onClick={() => handleClickCancel(e)}>Cancel</div>
+                                </div>
+                            }) : <>Không Tìm thấy đơn hàng</>
+                        }
+                    </Tabs.TabPane>
+                    <Tabs.TabPane tab="Trạng thái shipping" key="shipping">
+                        {
+                            listOrder.length > 0 ? listOrder.map(e => {
+                                return <div className='item_transaction' onClick={() => handleClickItem(e)}>
+                                    <img className='img_item_transaction' src={e.order_details?.[0].images?.[0]}></img>
+                                    <div className='content_item_transaction'>
+                                        <div>Trạng thái: {e.state}</div>
+                                        <div>Nơi nhận: {e.receive_address}</div>
+                                        <div>Tổng tiền: {formatCurrency(e.sale_price)} VND</div>
+                                        <div>Ghi chú: {e.note || "Không"}</div>
                                     </div>
                                 </div>
                             }) : <>Không Tìm thấy đơn hàng</>
                         }
                     </Tabs.TabPane>
-                    <Tabs.TabPane tab="Thành công" key="successful">
+                    <Tabs.TabPane tab="Trạng thái successful" key="successful">
                         {
                             listOrder.length > 0 ? listOrder.map(e => {
-                                return <div className='item_transaction' >
-                                    <div style={{ width: "auto" }}><img className='img_item_transaction' src={e.order_details?.[0].images?.[0]}></img></div>
-                                    <div className='content_item_transaction' onClick={() => handleClickItem(e)}
-                                        style={{ borderTopRightRadius: 25, borderBottomRightRadius: 25 }}>
+                                return <div className='item_transaction' onClick={() => handleClickItem(e)}>
+                                    <img className='img_item_transaction' src={e.order_details?.[0].images?.[0]}></img>
+                                    <div className='content_item_transaction' style={{ borderTopRightRadius: 25, borderBottomRightRadius: 25 }}>
+                                        <div>Trạng thái: {e.state}</div>
                                         <div>Nơi nhận: {e.receive_address}</div>
                                         <div>Tổng tiền: {formatCurrency(e.sale_price)} VND</div>
-                                        <div>Mã vận đơn: <a href={e.shipping_link}>{e.shipping_link}</a>  </div>
                                         <div>Ghi chú: {e.note || "Không"}</div>
                                     </div>
-                                    <div className='btn_cancel_transaction' >
-                                        <Button type="primary" onClick={() => handleClickComment(e)}>Cancel</Button>
-                                    </div>
-                                    <div className='btn_cancel_transaction'>
-
-                                    </div>
+                                    <div className='btn_cancel_transaction' onClick={() => handleClickComment(e)}>Bình Luận</div>
                                 </div>
                             }) : <>Không Tìm thấy đơn hàng</>
                         }
@@ -156,7 +165,6 @@ export default function Transaction() {
                                         style={{ borderTopRightRadius: 25, borderBottomRightRadius: 25 }}>
                                         <div>Nơi nhận: {e.receive_address}</div>
                                         <div>Tổng tiền: {formatCurrency(e.sale_price)} VND</div>
-                                        <div>Mã vận đơn: <a href={e.shipping_link}>{e.shipping_link}</a>  </div>
                                         <div>Ghi chú: {e.note || "Không"}</div>
                                     </div>
                                 </div>
