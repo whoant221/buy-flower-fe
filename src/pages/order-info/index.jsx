@@ -7,7 +7,7 @@ import { getinfoUser } from '../../api/home';
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { useNavigate } from 'react-router-dom';
 import { getVouchersByPrice, validVoucher } from "../../api/voucher.js";
-import * as moment from 'moment'
+import moment from 'moment';
 
 const dateFormatList = ['DD/MM/YYYY', 'DD/MM/YY'];
 
