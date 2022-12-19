@@ -120,7 +120,9 @@ export default function Transaction() {
                                         <div>Mã vận đơn: <a href={e.shipping_link}>{e.shipping_link}</a>  </div>
                                         <div>Ghi chú: {e.note || "Không"}</div>
                                     </div>
-                                    <div className='btn_cancel_transaction' onClick={() => handleClickCancel(e)}>Cancel</div>
+                                    <div className='btn_cancel_transaction'
+                                        onClick={() => handleClickCancel(e)}><Button type="primary" onClick={() => handleClickComment(e)}>Cancel</Button>
+                                    </div>
                                 </div>
                             }) : <>Không Tìm thấy đơn hàng</>
                         }
