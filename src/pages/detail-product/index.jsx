@@ -4,8 +4,9 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { addComment, addShopingCart, getCart, getComment, getDetailFlower } from '../../api/detail_product'
 import { formatCurrency } from '../../helper'
-import { Button, Form, Input, notification } from 'antd';
+import { Button, Form, Input, notification, Rate } from 'antd';
 import { getFlower } from '../../api/home'
+import { FrownOutlined, MehOutlined, SmileOutlined } from '@ant-design/icons';
 
 export function DetailProduct() {
     let navigate = useNavigate();
@@ -16,6 +17,14 @@ export function DetailProduct() {
     const [listComment, setListComment] = useState([])
     const token = localStorage.getItem('token')
     const [form] = Form.useForm();
+
+    const customIcons = {
+        1: <FrownOutlined />,
+        2: <FrownOutlined />,
+        3: <MehOutlined />,
+        4: <SmileOutlined />,
+        5: <SmileOutlined />,
+    };
 
     useEffect(() => {
         async function fetchData() {
@@ -63,10 +72,10 @@ export function DetailProduct() {
 
     }
 
-    const handleSubmitComment = async(e) => {
+    const handleSubmitComment = async (e) => {
         const dataComment = {
             "flower_id": slug,
-            "rank": 5,
+            "rank": e.rate,
             "content": e.comment
         }
         await addComment(dataComment, token).catch(err => notification.error({ message: "Bạn chưa mua sản phẩm này" }))
@@ -89,12 +98,12 @@ export function DetailProduct() {
         <div>
             <div className="close-any">
                 <div id="content">
-                    <Navbar/>
+                    <Navbar />
                     <div className="wrapper">
                         <div className="item_t margin_top_15">
                             <div className="l_item">
                                 <div className="flexslider">
-                                    <div className="clearfix"/>
+                                    <div className="clearfix" />
                                     <div className="flex-viewport" style={{ overflow: 'hidden', position: 'relative' }}>
                                         <div style={{
                                             width: '292px',
@@ -103,20 +112,20 @@ export function DetailProduct() {
                                             display: 'block'
                                         }}>
                                             <img src={infoFlower?.images[0]} data-imagezoom="true"
-                                                 className="img-responsive" width={300} height={360}/>
+                                                className="img-responsive" width={300} height={360} />
                                         </div>
                                     </div>
-                                    <ol className="flex-control-nav flex-control-thumbs"/>
+                                    <ol className="flex-control-nav flex-control-thumbs" />
 
                                 </div>
 
-                                <div className="clearfix"/>
+                                <div className="clearfix" />
                             </div>
                             <div className="r_item">
                                 <h2>{infoFlower?.name}</h2>
                                 <div className="single-price"><span
                                     className="old-price">{formatCurrency(infoFlower?.original_price)} VND</span><span
-                                    className="price">{formatCurrency(infoFlower?.sale_price)} VND</span></div>
+                                        className="price">{formatCurrency(infoFlower?.sale_price)} VND</span></div>
                                 <p className="vat">Giá đã bao gồm 8% VAT</p>
                                 <div className="pd_summary">{infoFlower?.description}</div>
                                 <h4>Sản phẩm bao gồm:</h4>
@@ -154,8 +163,8 @@ export function DetailProduct() {
                             </div>
                         </div>
 
-                        <div className="clearfix"/>
-                        <div className="clearfix"/>
+                        <div className="clearfix" />
+                        <div className="clearfix" />
                         <h2 className=' margin_top_15 ' style={{
                             textAlign: "left",
                             fontSize: 16,
@@ -168,7 +177,7 @@ export function DetailProduct() {
                                 sameFlower.length > 0 ? sameFlower.map(e => {
                                     return <a className="item" href={`/product/${e.id}`}>
                                         <div className="i"><img className="lazy" src={e.images[0]}
-                                                                style={{ display: 'inline' }}/></div>
+                                            style={{ display: 'inline' }} /></div>
                                         <div className="t">{e.name}
                                             <span className="vn"><em
                                                 className="oprice">{formatCurrency(e.original_price)} đ</em><em>{formatCurrency(e.sale_price) || formatCurrency(e.original_price)} đ</em></span>
@@ -184,14 +193,14 @@ export function DetailProduct() {
                              </div> */}
 
                         </div>
-                        <div className="clearfix"/>
-                        <div className="clearfix"/>
-                        <div className="clearfix"/>
+                        <div className="clearfix" />
+                        <div className="clearfix" />
+                        <div className="clearfix" />
                         <a href={`/product?category=${infoFlower?.category_ids[0]}`} className="viewmore">Xem thêm</a>
                     </div>
 
-                    <div className="clearfix"/>
-                    <div className="clearfix"/>
+                    <div className="clearfix" />
+                    <div className="clearfix" />
                     <div style={{ marginLeft: 65 }}>
                         <h2 className=' margin_top_15 ' style={{
                             textAlign: "left",
@@ -205,11 +214,11 @@ export function DetailProduct() {
                                 return <div style={{ float: "left" }} className={"tab_comment"}>
                                     <div style={{ display: "flex", alignItems: "center" }}>
                                         <img src='https://cdn-icons-png.flaticon.com/512/149/149071.png'
-                                             style={{ paddingRight: 10, width: 50 }}>
+                                            style={{ paddingRight: 10, width: 50 }}>
                                         </img>
                                         <div>
                                             <div style={{ fontWeight: 600, color: "#bd2026" }}>
-                                                {e.name}
+                                                {e.name} &nbsp;  <Rate character={({ index }) => customIcons[index + 1]} value={e.rank} />
                                             </div>
                                             <div>{e.content}</div>
                                         </div>
@@ -217,6 +226,7 @@ export function DetailProduct() {
                                 </div>
                             }) : <></>
                         }
+                        {console.log(listComment)}
                         <Form
                             name="comment"
                             onFinish={handleSubmitComment}
@@ -226,12 +236,15 @@ export function DetailProduct() {
                             layout="inline"
                             form={form}
                         >
+                            <Form.Item name="rate" label="Rate" rules={[{ required: true, message: 'Chọn mức độ yêu thích' }]}>
+                                <Rate character={({ index }) => customIcons[index + 1]} />
+                            </Form.Item>
                             <Form.Item
                                 name="comment"
                                 rules={[{ required: true, message: 'Hãy nhập trước khi bình luận' }]}
                                 style={{ width: "89%", height: 48 }}
                             >
-                                <Input placeholder="Nhập bình luận" style={{ height: 50 }}/>
+                                <Input placeholder="Nhập bình luận" style={{ height: 50 }} />
                             </Form.Item>
                             <Form.Item style={{ paddingTop: 10 }}>
                                 <Button type="primary" htmlType="submit">
@@ -240,7 +253,7 @@ export function DetailProduct() {
                             </Form.Item>
                         </Form>
                     </div>
-                    <Footer/>
+                    <Footer />
                 </div>
 
             </div>
