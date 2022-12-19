@@ -127,22 +127,7 @@ export default function Transaction() {
                             }) : <>Không Tìm thấy đơn hàng</>
                         }
                     </Tabs.TabPane>
-                    <Tabs.TabPane tab="Trạng thái shipping" key="shipping">
-                        {
-                            listOrder.length > 0 ? listOrder.map(e => {
-                                return <div className='item_transaction' onClick={() => handleClickItem(e)}>
-                                    <img className='img_item_transaction' src={e.order_details?.[0].images?.[0]}></img>
-                                    <div className='content_item_transaction'>
-                                        <div>Trạng thái: {e.state}</div>
-                                        <div>Nơi nhận: {e.receive_address}</div>
-                                        <div>Tổng tiền: {formatCurrency(e.sale_price)} VND</div>
-                                        <div>Ghi chú: {e.note || "Không"}</div>
-                                    </div>
-                                </div>
-                            }) : <>Không Tìm thấy đơn hàng</>
-                        }
-                    </Tabs.TabPane>
-                    <Tabs.TabPane tab="Trạng thái successful" key="successful">
+                    <Tabs.TabPane tab="Đơn thành công" key="successful">
                         {
                             listOrder.length > 0 ? listOrder.map(e => {
                                 return <div className='item_transaction' onClick={() => handleClickItem(e)}>
