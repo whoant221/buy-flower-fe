@@ -78,3 +78,12 @@ export const getinfoUser = async(token) => {
     }
 };
 
+export const getBuds = async () => {
+    try {
+        const data = await getAPI(`/api/v1/buds`);
+        return data;
+    } catch (error) {
+        throw error;
+    }
+};
+
