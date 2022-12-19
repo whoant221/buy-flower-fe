@@ -7,16 +7,11 @@ import { getinfoUser } from '../../api/home';
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { useNavigate } from 'react-router-dom';
 import { getVouchersByPrice, validVoucher } from "../../api/voucher.js";
-import moment from 'moment/moment';
+import * as moment from 'moment'
 
 const dateFormatList = ['DD/MM/YYYY', 'DD/MM/YY'];
 
-
-
 export function OrderInfo() {
-
-
-
     const token = localStorage.getItem('token')
     let navigate = useNavigate();
     const [form] = Form.useForm();
@@ -27,76 +22,68 @@ export function OrderInfo() {
     const [sum, setSum] = useState(0)
     const [discount, setDiscount] = useState(0);
     const [infoReceive, setInfoReceive] = useState({
-        "receive_address": '',
-        "receiver": '',
-        "receive_phone": '',
-        "delivery_time": '',
-        "gift_cart_for": '',
-        "reason": '',
-        "message": '',
-        "currentCode": ''
+        receive_address: "",
+        receiver: "",
+        receive_phone: "",
+        delivery_time: "",
+        gift_cart_for: "",
+        reason: "",
+        message: "",
+        currentCode: ''
     });
-    // let infoReceive = {
-    //     "receive_address": "",
-    //     "receiver": "",
-    //     "receive_phone": "",
-    //     "delivery_time": "",
-    //     "gift_cart_for": "",
-    //     "reason": "",
-    //     "message": "",
-    //     "currentCode": ""
-    // }
+
     const [vouchers, setVouchers] = useState([]);
 
     const { TextArea } = Input;
 
-    const onFinish = async (values) => {
-        let { gift_cart_for, message, reason } = values
-        if (!gift_cart_for) gift_cart_for = ""
-        if (!message) message = ""
-        if (!reason) reason = ""
-
-
-
-        const vaaa = { ...infoReceive, ...values, gift_cart_for, message, reason }
-        setDisablePaypal(false)
-        await addOrder(vaaa, token)
+    const onSave = (props) => {
+        Modal.success({
+            content: 'Bạn đã đặt thành công. Chúng tôi sẽ liên lạc với bạn sớm nhất có thể để xác nhận thông tin này.',
+        });
+        navigate("/")
     }
 
+    const onFinish = async (e) => {
+        setDisablePaypal(false)
+        const dataSave = { ...infoReceive, ...e, delivery_time: moment(e.delivery_time).format("YYYY-MM-DD") };
+
+        await addOrder(dataSave, token)
+    }
+
+
     const handleChangeVoucher = async (code) => {
-        // if (code === undefined) {
-        //     setInfoReceive(prevState => ({
-        //         ...prevState,
-        //         currentCode: ''
-        //     }));
+        if (code === undefined) {
+            setInfoReceive(prevState => ({
+                ...prevState,
+                currentCode: ''
+            }));
 
-        //     setDiscount(0);
-        //     return;
-        // }
-        // try {
-        //     const { data: { sale_price } } = await validVoucher(code, sum)
-        //     if (sale_price === 0) {
-        //         setInfoReceive(prevState => ({
-        //             ...prevState,
-        //             currentCode: ''
-        //         }));
-        //         Modal.error({
-        //             content: 'Bạn không đủ điều kiện để sử dụng voucher này',
-        //         });
-        //         return;
-        //     }
+            setDiscount(0);
+            return;
+        }
+        try {
+            const { data: { sale_price } } = await validVoucher(code, sum)
+            if (sale_price === 0) {
+                setInfoReceive(prevState => ({
+                    ...prevState,
+                    currentCode: ''
+                }));
+                Modal.error({
+                    content: 'Bạn không đủ điều kiện để sử dụng voucher này',
+                });
+                return;
+            }
 
-        //     setInfoReceive(prevState => ({
-        //         ...prevState,
-        //         currentCode: code
-        //     }));
+            setInfoReceive(prevState => ({
+                ...prevState,
+                currentCode: code
+            }));
 
-        //     setDiscount(sale_price);
-        // } catch (e) {
-        //     console.error(e);
-        // }
+            setDiscount(sale_price);
+        } catch (e) {
+            console.error(e);
+        }
     };
-
 
     useEffect(() => {
         async function fetch() {
@@ -191,37 +178,34 @@ export function OrderInfo() {
                                     <Input />
                                 </Form.Item>
 
-                                {/* <h2>Thời gian giao hàng</h2> */}
+
                                 <Form.Item label="Thời gian giao hàng"
                                     name="delivery_time"
                                     style={{ width: 300 }}
-                                    required
                                     rules={[
                                         {
                                             required: true,
-                                            message: 'Hãy chọn thời gian giao hàng',
+                                            message: 'Hãy nhập ngày nhận',
                                         },
                                     ]}>
-                                    {/*<DatePicker*/}
-                                    {/*    defaultValue={dayjs(moment.now(), dateFormatList[0])}*/}
-                                    {/*    format={dateFormatList}/>*/}
                                     <DatePicker disabledDate={(current) => {
-                                        let customDate = moment().format("YYYY-MM-DD");
-                                        return current && current < moment(customDate, "YYYY-MM-DD");
+                                        // Can not select days before today and today
+                                        return current && current < moment().endOf('day');
                                     }} />
                                 </Form.Item>
                                 <h2>Lời nhắn</h2>
                                 <div>
                                     <Form.Item label="Thiệp gửi tặng cho:"
-                                        defaultValue=""
+                                        defaultValue="Thiệp gửi tặng cho"
                                         name="gift_cart_for"
-                                        style={{ paddingTop: 50, width: 535 }}
+                                        style={{ paddingTop: 50 }}
                                         rules={[
                                             {
                                                 required: true,
-                                                message: "vui lòng nhập thông tin"
+                                                message: 'Yêu cầu nhập',
                                             },
                                         ]}>
+
                                         <Select>
                                             <Select.Option value="brother">Anh,
                                                 chị, em - Brother,
@@ -255,15 +239,12 @@ export function OrderInfo() {
 
                                     <Form.Item label="Nhân dịp:"
                                         name="reason"
-                                        defaultValue="Nhân dịp"
-                                        style={{ width: 535 }}
-                                        rules={[
+                                        defaultValue="Nhân dịp" rules={[
                                             {
                                                 required: true,
-                                                message: "vui lòng nhập thông tin"
+                                                message: 'Yêu cầu nhập',
                                             },
-                                        ]}
-                                    >
+                                        ]}>
                                         <Select>
                                             <Select.Option
                                                 value="Congratulations">Chúc
@@ -299,11 +280,10 @@ export function OrderInfo() {
                                     </Form.Item>
                                 </div>
 
-                                <Form.Item label="Lời nhắn: " name="message" style={{ width: 535 }} rules={[
+                                <Form.Item label="Lời nhắn: " name="message" rules={[
                                     {
                                         required: true,
-                                        message: "vui lòng nhập thông tin"
-
+                                        message: 'Yêu cầu nhập',
                                     },
                                 ]}>
                                     <TextArea rows={4} />
@@ -332,14 +312,13 @@ export function OrderInfo() {
                                         <PayPalButtons
                                             disabled={disablePaypal}
                                             createOrder={(data, actions) => {
-                                                console.log(infoReceive)
                                                 return actions.order.create({
                                                     purchase_units: [
                                                         {
                                                             amount: {
                                                                 currency_code: "USD",
-                                                                // value: (sum / 23000).toFixed(2)
-                                                                value: 2
+                                                                value: (sum / 22000).toFixed(2)
+
                                                             },
                                                         },
 
@@ -349,41 +328,31 @@ export function OrderInfo() {
                                             onApprove={(data, actions) => {
 
                                                 return actions.order.capture().then((details) => {
-                                                    if (details.status === "COMPLETED") {
-                                                        Modal.success({
-                                                            content: 'Bạn đã đặt thành công. Chúng tôi sẽ liên lạc với bạn sớm nhất có thể để xác nhận thông tin này.',
-                                                        })
-                                                    } else {
-                                                        Modal.error({
-                                                            content: 'Thanh toán không thành công.',
-                                                        })
-                                                    }
+                                                    onSave()
                                                 });
                                             }}
                                         />
+
                                     </PayPalScriptProvider>
                                 </div>
                             </Form>
                         </div>
                         <div className="sc-right">
-                            <div style={{ display: "flex", alignItems: "center" }}>
-                                <div style={{ fontWeight: 700, paddingRight: 10 }}>Add Voucher: </div>
-                                <Input.Group compact style={{ textAlign: "left", width: 340 }}>
-                                    <Select
-                                        style={{
-                                            width: '100%',
-                                        }}
-                                        onChange={handleChangeVoucher}
-                                        allowClear
-                                        options={vouchers && vouchers.map(voucher => {
-                                            return {
-                                                label: voucher.condition_str,
-                                                value: voucher.code
-                                            }
-                                        })}
-                                    />
-                                </Input.Group>
-                            </div>
+                            <Input.Group compact style={{ textAlign: "left" }}>
+                                <Select
+                                    style={{
+                                        width: '100%',
+                                    }}
+                                    onChange={handleChangeVoucher}
+                                    allowClear
+                                    options={vouchers && vouchers.map(voucher => {
+                                        return {
+                                            label: voucher.condition_str,
+                                            value: voucher.code
+                                        }
+                                    })}
+                                />
+                            </Input.Group>
                             {
                                 cart.length > 0 ? cart.map(e => {
                                     return <div className="cart-item"

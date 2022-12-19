@@ -1,4 +1,4 @@
-import { Modal, notification, Tabs } from 'antd';
+import { Modal, notification, Tabs, Button } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import { Navbar } from '../../layout/header/navbar';
@@ -18,7 +18,7 @@ export default function Transaction() {
     const token = localStorage.getItem('token')
     useEffect(() => {
         async function fetch() {
-            setListOrder((await getOrder({ state: "init" }, token)).data.orders)
+            setListOrder((await getOrder({ state: "pending" }, token)).data.orders)
         }
 
         fetch()
@@ -28,20 +28,20 @@ export default function Transaction() {
         async function fetch() {
             setListOrder((await getOrder({ state: e }, token)).data.orders)
         }
-
+        console.log(e)
         fetch()
     }
 
     const handleClickCancel = (e) => {
         Modal.confirm({
             title: 'Xác nhận',
-            icon: <ExclamationCircleOutlined/>,
+            icon: <ExclamationCircleOutlined />,
             content: 'Bạn chắc chắn muốn hủy đơn hàng này ?',
             okText: 'Xác nhận',
             cancelText: 'Từ chối',
-            onOk: async() => {
+            onOk: async () => {
                 deleteOrder(e.order_id, token).then(res => notification.success({ message: "bạn đã hủy thành công." }))
-                                              .catch(err => notification.error({ message: "không thể hủy đơn hàng !" }))
+                    .catch(err => notification.error({ message: "không thể hủy đơn hàng !" }))
             }
         });
 
@@ -79,29 +79,29 @@ export default function Transaction() {
                 </div>
 
             </Modal>
-            <Navbar/>
+            <Navbar />
             <h2 style={{ textAlign: "left", paddingTop: "150px" }}>Lịch sử giao dịch</h2>
             <div style={{ float: 'left', width: "1200px" }}>
                 <Tabs defaultActiveKey="1" tabPosition={"left"} style={{
                     height: 220,
                 }}
-                      tabBarStyle={{ width: "200px", height: "1000px" }}
-                      centered={true}
-                      onTabClick={handleClickItemTab}
+                    tabBarStyle={{ width: "200px", height: "1000px" }}
+                    centered={true}
+                    onTabClick={handleClickItemTab}
                 >
 
                     <Tabs.TabPane tab="Đang chờ xác nhận" key="pending">
                         {
                             listOrder.length > 0 ? listOrder.map(e => {
-                                return <div className='item_transaction' onClick={() => handleClickItem(e)}>
-                                    <img className='img_item_transaction' src={e.order_details?.[0].images?.[0]}></img>
-                                    <div className='content_item_transaction'>
+                                return <div className='item_transaction' >
+                                    <div style={{ width: "auto" }}><img className='img_item_transaction' src={e.order_details?.[0].images?.[0]}></img></div>
+                                    <div className='content_item_transaction' onClick={() => handleClickItem(e)}>
                                         <div>Nơi nhận: {e.receive_address}</div>
                                         <div>Tổng tiền: {formatCurrency(e.sale_price)} VND</div>
                                         <div>Ghi chú: {e.note || "Không"}</div>
                                     </div>
                                     <div className='btn_cancel_transaction'
-                                         onClick={() => handleClickCancel(e)}>Cancel
+                                        onClick={() => handleClickCancel(e)}><Button type="primary" onClick={() => handleClickComment(e)}>Cancel</Button>
                                     </div>
                                 </div>
                             }) : <>Không Tìm thấy đơn hàng</>
@@ -110,16 +110,16 @@ export default function Transaction() {
                     <Tabs.TabPane tab="Đang giao" key="processing">
                         {
                             listOrder.length > 0 ? listOrder.map(e => {
-                                return <div className='item_transaction' onClick={() => handleClickItem(e)}>
-                                    <img className='img_item_transaction' src={e.order_details?.[0].images?.[0]}></img>
-                                    <div className='content_item_transaction'>
+                                return <div className='item_transaction' >
+                                    <div style={{ width: "auto" }}><img className='img_item_transaction' src={e.order_details?.[0].images?.[0]}></img></div>
+                                    <div className='content_item_transaction' onClick={() => handleClickItem(e)}>
                                         <div>Nơi nhận: {e.receive_address}</div>
                                         <div>Tổng tiền: {formatCurrency(e.sale_price)} VND</div>
-                                        <div>Mã vận đơn: {e.shipping_link} </div>
+                                        <div>Mã vận đơn: <a href={e.shipping_link}>{e.shipping_link}</a>  </div>
                                         <div>Ghi chú: {e.note || "Không"}</div>
                                     </div>
                                     <div className='btn_cancel_transaction'
-                                         onClick={() => handleClickCancel(e)}>Cancel
+                                        onClick={() => handleClickCancel(e)}><Button type="primary" onClick={() => handleClickComment(e)}>Cancel</Button>
                                     </div>
                                 </div>
                             }) : <>Không Tìm thấy đơn hàng</>
@@ -128,17 +128,20 @@ export default function Transaction() {
                     <Tabs.TabPane tab="Thành công" key="successful">
                         {
                             listOrder.length > 0 ? listOrder.map(e => {
-                                return <div className='item_transaction' onClick={() => handleClickItem(e)}>
-                                    <img className='img_item_transaction' src={e.order_details?.[0].images?.[0]}></img>
-                                    <div className='content_item_transaction'
-                                         style={{ borderTopRightRadius: 25, borderBottomRightRadius: 25 }}>
+                                return <div className='item_transaction' >
+                                    <div style={{ width: "auto" }}><img className='img_item_transaction' src={e.order_details?.[0].images?.[0]}></img></div>
+                                    <div className='content_item_transaction' onClick={() => handleClickItem(e)}
+                                        style={{ borderTopRightRadius: 25, borderBottomRightRadius: 25 }}>
                                         <div>Nơi nhận: {e.receive_address}</div>
                                         <div>Tổng tiền: {formatCurrency(e.sale_price)} VND</div>
-                                        <div>Mã vận đơn: {e.shipping_link} </div>
+                                        <div>Mã vận đơn: <a href={e.shipping_link}>{e.shipping_link}</a>  </div>
                                         <div>Ghi chú: {e.note || "Không"}</div>
                                     </div>
-                                    <div className='btn_cancel_transaction' onClick={() => handleClickComment(e)}>Bình
-                                        Luận
+                                    <div className='btn_cancel_transaction' >
+                                        <Button type="primary" onClick={() => handleClickComment(e)}>Cancel</Button>
+                                    </div>
+                                    <div className='btn_cancel_transaction'>
+
                                     </div>
                                 </div>
                             }) : <>Không Tìm thấy đơn hàng</>
@@ -148,12 +151,12 @@ export default function Transaction() {
                         {
                             listOrder.length > 0 ? listOrder.map(e => {
                                 return <div className='item_transaction' onClick={() => handleClickItem(e)}>
-                                    <img className='img_item_transaction' src={e.order_details?.[0].images?.[0]}></img>
+                                    <div style={{ width: "auto" }}><img className='img_item_transaction' src={e.order_details?.[0].images?.[0]}></img></div>
                                     <div className='content_item_transaction'
-                                         style={{ borderTopRightRadius: 25, borderBottomRightRadius: 25 }}>
+                                        style={{ borderTopRightRadius: 25, borderBottomRightRadius: 25 }}>
                                         <div>Nơi nhận: {e.receive_address}</div>
                                         <div>Tổng tiền: {formatCurrency(e.sale_price)} VND</div>
-                                        <div>Mã vận đơn: {e.shipping_link} </div>
+                                        <div>Mã vận đơn: <a href={e.shipping_link}>{e.shipping_link}</a>  </div>
                                         <div>Ghi chú: {e.note || "Không"}</div>
                                     </div>
                                 </div>

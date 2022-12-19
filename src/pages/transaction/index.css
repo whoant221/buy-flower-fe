@@ -3,12 +3,12 @@
     border: 1px solid none;
     margin-bottom: 15px;
     border-radius: 25px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.05);
 
 }
 
 .img_item_transaction {
-    margin: 0px 30px;
+    margin: 0px 15px;
     width: 120px;
     height: 120px
 }
@@ -21,7 +21,7 @@
     gap: 10px;
     text-align: left;
     width: 100%;
-    background-color: #f6e6e661;
+    background-color: #f7f7f7;
 
 }
 
@@ -31,7 +31,17 @@
     display: flex;
     padding-right: 30px;
     cursor: pointer;
-    background-color: #f6e6e661;
+    background-color: #f7f7f7;
     border-top-right-radius: 25px;
     border-bottom-right-radius: 25px;
+}
+
+.code_voucher {
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    border-top-left-radius: 25px;
+    border-bottom-left-radius: 25px;
 }
