@@ -45,6 +45,9 @@ export function ListProduct() {
             } else if (paramColor) {
                 setListFlower((await getFlower({ color: paramColor })).flowers)
             }
+            else if (paramBud) {
+                setListFlower((await getFlower({ bud_id: paramBud })).flowers)
+            }
             else {
                 setListFlower((await getFlower()).flowers)
             }

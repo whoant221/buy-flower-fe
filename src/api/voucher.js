@@ -11,3 +11,7 @@ export const validVoucher = (code, price) => {
         code, price
     });
 };
+
+export const getPointVoucher = () => {
+    return axios.get('/api/v1/users')
+}

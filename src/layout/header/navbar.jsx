@@ -31,7 +31,7 @@ export function Navbar() {
     useEffect(() => {
         async function fetch() {
             setlistCategories((await getCategory()).categories)
-            setInfoUser((await getinfoUser(token)))
+            // setInfoUser((await getinfoUser(token)))
             setListColor((await getColor()).colors)
             setListBuds((await getBuds()).buds)
         }

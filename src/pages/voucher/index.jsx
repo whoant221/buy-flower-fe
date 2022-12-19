@@ -6,14 +6,11 @@ import { deleteOrder, getOrder } from '../../api/detail_product'
 import { formatCurrency } from '../../helper';
 
 import { useNavigate } from 'react-router-dom';
+import { getPointVoucher } from '../../api/voucher';
 
 export default function Voucher() {
     const navigate = useNavigate()
-    const [current, setCurrent] = useState('init');
-    const [listOrder, setListOrder] = useState([])
-    const [openModalCancel, setModalCancel] = useState(false);
-    const [modalItem, setModalItem] = useState(false)
-    const [order, setOrder] = useState()
+    const [point, setPoint] = useState()
 
     const token = localStorage.getItem('token')
 
@@ -24,7 +21,14 @@ export default function Voucher() {
         fetch()
     }
 
-
+    useEffect(() => {
+        const fetch = async () => {
+            const getPoint = await getPointVoucher()
+            setPoint(getPoint)
+        }
+        fetch()
+    }, [])
+    console.log(point);
     return (
         <div>
             {/* <Modal title="Chi Tiết Đơn Hàng" closable={null} open={modalItem} onOk={() => { setModalItem(false) }} onCancel={() => { setModalItem(false) }}>
