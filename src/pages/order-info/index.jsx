@@ -43,15 +43,22 @@ export function OrderInfo() {
         navigate("/")
     }
 
-    const onFinish = async (e) => {
+    const onFinish = async(e) => {
         setDisablePaypal(false)
         const dataSave = { ...infoReceive, ...e, delivery_time: moment(e.delivery_time).format("YYYY-MM-DD") };
+        try {
+            await addOrder(dataSave, token)
+        } catch (e) {
+            e.response.data.forEach(({ message }) => {
+                Modal.error({ content: message })
+            })
 
-        await addOrder(dataSave, token)
+        }
+
     }
 
 
-    const handleChangeVoucher = async (code) => {
+    const handleChangeVoucher = async(code) => {
         if (code === undefined) {
             setInfoReceive(prevState => ({
                 ...prevState,
@@ -88,11 +95,11 @@ export function OrderInfo() {
     useEffect(() => {
         async function fetch() {
             setCard((await getCart(token)).data.shopping_carts)
-            const newUser = await getinfoUser(token)
+            const { data } = await getinfoUser(token)
             form.setFieldsValue({
-                receive_address: newUser.address,
-                receiver: newUser.name,
-                receive_phone: newUser.phone_number
+                receive_address: data.address,
+                receiver: data.name,
+                receive_phone: data.phone_number
             });
         }
 
@@ -100,7 +107,7 @@ export function OrderInfo() {
     }, [])
 
     useEffect(() => {
-        const getVouchers = async () => {
+        const getVouchers = async() => {
             try {
                 const { data: { vouchers } } = await getVouchersByPrice(sum);
                 setVouchers(vouchers);
@@ -125,10 +132,10 @@ export function OrderInfo() {
     return (
         <div>
             <div className="close-any">
-                <Navbar />
+                <Navbar/>
                 <div id="content">
                     <div className="wrapper">
-                        <div className="clearfix" />
+                        <div className="clearfix"/>
                         <div className=" frm-data">
                             {/* <h2>Thông tin người mua</h2> */}
                             <Form
@@ -149,7 +156,7 @@ export function OrderInfo() {
                                         },
                                     ]}
                                 >
-                                    <Input />
+                                    <Input/>
                                 </Form.Item>
 
                                 <Form.Item
@@ -162,7 +169,7 @@ export function OrderInfo() {
                                         },
                                     ]}
                                 >
-                                    <Input />
+                                    <Input/>
                                 </Form.Item>
 
                                 <Form.Item
@@ -175,36 +182,36 @@ export function OrderInfo() {
                                         },
                                     ]}
                                 >
-                                    <Input />
+                                    <Input/>
                                 </Form.Item>
 
 
                                 <Form.Item label="Thời gian giao hàng"
-                                    name="delivery_time"
-                                    style={{ width: 300 }}
-                                    rules={[
-                                        {
-                                            required: true,
-                                            message: 'Hãy nhập ngày nhận',
-                                        },
-                                    ]}>
+                                           name="delivery_time"
+                                           style={{ width: 300 }}
+                                           rules={[
+                                               {
+                                                   required: true,
+                                                   message: 'Hãy nhập ngày nhận',
+                                               },
+                                           ]}>
                                     <DatePicker disabledDate={(current) => {
                                         // Can not select days before today and today
                                         return current && current < moment().endOf('day');
-                                    }} />
+                                    }}/>
                                 </Form.Item>
                                 <h2>Lời nhắn</h2>
                                 <div>
                                     <Form.Item label="Thiệp gửi tặng cho:"
-                                        defaultValue="Thiệp gửi tặng cho"
-                                        name="gift_cart_for"
-                                        style={{ paddingTop: 50 }}
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Yêu cầu nhập',
-                                            },
-                                        ]}>
+                                               defaultValue="Thiệp gửi tặng cho"
+                                               name="gift_cart_for"
+                                               style={{ paddingTop: 50 }}
+                                               rules={[
+                                                   {
+                                                       required: true,
+                                                       message: 'Yêu cầu nhập',
+                                                   },
+                                               ]}>
 
                                         <Select>
                                             <Select.Option value="brother">Anh,
@@ -238,13 +245,13 @@ export function OrderInfo() {
                                 <div>
 
                                     <Form.Item label="Nhân dịp:"
-                                        name="reason"
-                                        defaultValue="Nhân dịp" rules={[
-                                            {
-                                                required: true,
-                                                message: 'Yêu cầu nhập',
-                                            },
-                                        ]}>
+                                               name="reason"
+                                               defaultValue="Nhân dịp" rules={[
+                                        {
+                                            required: true,
+                                            message: 'Yêu cầu nhập',
+                                        },
+                                    ]}>
                                         <Select>
                                             <Select.Option
                                                 value="Congratulations">Chúc
@@ -286,16 +293,16 @@ export function OrderInfo() {
                                         message: 'Yêu cầu nhập',
                                     },
                                 ]}>
-                                    <TextArea rows={4} />
+                                    <TextArea rows={4}/>
                                 </Form.Item>
 
                                 <Form.Item
                                 >
                                     <Button type="primary" htmlType="submit"
-                                        className="e-buy" style={{
-                                            height: 40,
-                                            width: "50%"
-                                        }}>
+                                            className="e-buy" style={{
+                                        height: 40,
+                                        width: "50%"
+                                    }}>
                                         Kiểm tra thông tin
                                     </Button>
 
@@ -356,18 +363,20 @@ export function OrderInfo() {
                             {
                                 cart.length > 0 ? cart.map(e => {
                                     return <div className="cart-item"
-                                        data-id={13376}>
+                                                data-id={13376}>
                                         <div className="img" style={{
                                             width: 100,
                                             marginBottom: 20
                                         }}>
-                                            <img src={e.images[0]} />
+                                            <img src={e.images[0]}/>
                                         </div>
                                         <div className="text" style={{ paddingTop: 50 }}>
                                             <a href="">{e.name}</a>
-                                            <p><span style={{ color: "#000" }}>{e.amount} x {formatCurrency(e.original_price)} đ</span></p>
+                                            <p><span
+                                                style={{ color: "#000" }}>{e.amount} x {formatCurrency(e.original_price)} đ</span>
+                                            </p>
                                         </div>
-                                        <div className="clearfix" />
+                                        <div className="clearfix"/>
                                     </div>
                                 }) : <></>
                             }
