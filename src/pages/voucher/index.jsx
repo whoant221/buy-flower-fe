@@ -82,7 +82,7 @@ export default function Voucher() {
                         })}
                     </Tabs.TabPane>
                     <Tabs.TabPane tab="Đổi voucher" key="processing">
-
+                        <h2 style={{ textAlign: 'left' }}>Số điểm hiện tại của bạn là: {point}</h2>
                         {voucherExchange.length > 0 && voucherExchange.map(e => {
                             return <div className='item_transaction' style={{ marginTop: 10 }}>
                                 <div className='code_voucher'>{e.code}</div>
