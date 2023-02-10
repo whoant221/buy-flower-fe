@@ -1,5 +1,5 @@
 import { getAPI, postAPI, putAPI } from "./axios";
-import Axios from "axios";
+import axios from './axiosInstance.js';
 
 
 export const getFlower = async(param) => {
@@ -55,6 +55,7 @@ export const editDetailCategory = async(param, token) => {
 
 export const forgotPassword = async(body) => {
     try {
+
         const data = await postAPI(`/api/v1/sessions/reset_password`, body);
         return data;
     } catch (error) {
@@ -64,24 +65,13 @@ export const forgotPassword = async(body) => {
 
 
 export const getinfoUser = async(token) => {
-    try {
-        const config = {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        };
-        const res = Axios.get('https://api-buy-flower.votuan.xyz/api/v1/users', config).then((res) => res.data);
+    return axios.get('/api/v1/users')
 
-        return res;
-    } catch (error) {
-        throw error;
-    }
 };
 
-export const getBuds = async () => {
+export const getBuds = async() => {
     try {
-        const data = await getAPI(`/api/v1/buds`);
-        return data;
+        return await getAPI(`/api/v1/buds`);
     } catch (error) {
         throw error;
     }
